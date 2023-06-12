@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import TodosForm from "./TodosForm";
 import { useSelector, useDispatch } from "react-redux";
+import Cookies from "js-cookie";
+import { Navigate } from "react-router-dom";
 import "./Todos.css";
 import {
   toggleTodo,
@@ -17,9 +19,16 @@ const TodoDisplay = () => {
   const sreachedText = useSelector((state) => state.todos.sreachText);
   const activeTab = useSelector((state) => state.todos.filterMethod);
 
-  //edit handler staus satus 
-  const [editStaus,setEditStaus]=useState(false)
-  const [editTodoData,setEditTodoData]=useState(null)
+  //routing prevrnting if user already login
+
+  const token = Cookies.get("token");
+  if (token ===undefined) {
+    <Navigate to="/login" />;
+  }
+
+  //edit handler staus satus
+  const [editStaus, setEditStaus] = useState(false);
+  const [editTodoData, setEditTodoData] = useState(null);
   //tabs
   const tabTodosFilter = todos.filter((todo) => {
     if (activeTab === "REAMING") {
@@ -48,20 +57,22 @@ const TodoDisplay = () => {
     todo.text.toLowerCase().includes(sreachedText.toLowerCase())
   );
 
-  //on edit buuton click 
-  const onEditHandler=(todo)=>{
-    setEditStaus(true)
-    setEditTodoData(todo)
-
-  }
-  const onEditUpdate=()=>{
-    setEditStaus(false)
-  }
-
+  //on edit buuton click
+  const onEditHandler = (todo) => {
+    setEditStaus(true);
+    setEditTodoData(todo);
+  };
+  const onEditUpdate = () => {
+    setEditStaus(false);
+  };
 
   return (
     <div>
-      <TodosForm editStatus={editStaus} todoData={editTodoData} editSatusUpdate={onEditUpdate} />
+      <TodosForm
+        editStatus={editStaus}
+        todoData={editTodoData}
+        editSatusUpdate={onEditUpdate}
+      />
 
       {/* sreach the todos section */}
       <div style={{ display: "felx", margin: "20px" }}>
@@ -95,7 +106,7 @@ const TodoDisplay = () => {
               onChange={() => onToggleCheckHandler(todo.id)}
             />
             <p className="todoText">{todo.text}</p>
-            <button onClick={()=>onEditHandler(todo)}>Edit</button>
+            <button onClick={() => onEditHandler(todo)}>Edit</button>
             {todo.completed && (
               <button
                 className="DeltedButton"
